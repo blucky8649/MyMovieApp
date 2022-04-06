@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/movie_nav_graph"
+    app:startDestination="@id/movieListFragment">
+    <fragment
+        android:id="@+id/movieListFragment"
+        android:name="com.example.mymovieapp.ui.fragments.MovieListFragment"
+        android:label="MovieListFragment" >
+        <action
+            android:id="@+id/action_movieListFragment_to_movieWebViewFragment"
+            app:destination="@id/movieWebViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/saveMovieFragment"
+        android:name="com.example.mymovieapp.ui.fragments.SaveMovieFragment"
+        android:label="SaveMovieFragment" >
+        <action
+            android:id="@+id/action_saveMovieFragment_to_movieWebViewFragment"
+            app:destination="@id/movieWebViewFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/movieWebViewFragment"
+        android:name="com.example.mymovieapp.ui.fragments.MovieWebViewFragment"
+        android:label="MovieWebViewFragment" />
+    <fragment
+        android:id="@+id/searchKeywordFragment"
+        android:name="com.example.mymovieapp.ui.fragments.SearchKeywordFragment"
+        android:label="SearchKeywordFragment" />
+</navigation>

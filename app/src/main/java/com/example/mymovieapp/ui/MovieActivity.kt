@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.paging.ExperimentalPagingApi
 import com.example.mymovieapp.R
 import com.example.mymovieapp.databinding.ActivityMovieBinding
 import com.example.mymovieapp.viewmodel.MovieViewModel
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
+@ExperimentalPagingApi
 class MovieActivity : AppCompatActivity() {
     val viewModel: MovieViewModel by viewModels()
     private lateinit var binding: ActivityMovieBinding
@@ -27,11 +29,7 @@ class MovieActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         binding.bottomNavigationView.setupWithNavController(navController)
 
-        lifecycleScope.launch {
-            viewModel.movieList.collectLatest {
-                Log.d("Lee", it.toString())
-            }
-        }
+
 
     }
 }

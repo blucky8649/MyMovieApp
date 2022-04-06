@@ -1,9 +1,9 @@
 package com.example.mymovieapp.di
 
-import com.example.mymovieapp.Constants.BASE_URL
+import com.example.mymovieapp.util.Constants.BASE_URL
 import com.example.mymovieapp.api.MovieApi
-import com.example.mymovieapp.repositories.MovieRepository
-import com.example.mymovieapp.repositories.MovieRepositoryImpl
+import com.example.mymovieapp.data.MovieRepository
+import com.example.mymovieapp.data.MovieRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,7 +12,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module

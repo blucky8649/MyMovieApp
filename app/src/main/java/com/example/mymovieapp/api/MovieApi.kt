@@ -20,5 +20,5 @@ interface MovieApi {
         display: Int? = null,
         @Query("start")
         start: Int? = null
-    ): Response<Movie>
+    ): Movie
 }

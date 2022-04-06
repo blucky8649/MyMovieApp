@@ -1,38 +1,38 @@
 package com.example.mymovieapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mymovieapp.model.Movie
-import com.example.mymovieapp.repositories.MovieRepository
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.example.mymovieapp.data.MovieRepository
+import com.example.mymovieapp.model.MovieItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import retrofit2.Response
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
+@ExperimentalPagingApi
 class MovieViewModel @Inject constructor(
     private val repository: MovieRepository
 ) : ViewModel() {
-    private val _movieList:MutableStateFlow<Movie> = MutableStateFlow(Movie.emptyMovieItem)
-    val movieList get(): StateFlow<Movie> = _movieList
+    private val _movieList = MutableStateFlow<PagingData<MovieItem>>(PagingData.empty())
+    val movieList get() = _movieList
 
-    init {
-        getMovieList()
+    private val _searchQuery:MutableStateFlow<String> = MutableStateFlow("")
+    val searchQuery get(): StateFlow<String> = _searchQuery
+
+    fun postKeyword(searchQuery: String) {
+        _searchQuery.value = searchQuery
+    }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val result = searchQuery.flatMapLatest {
+        Log.d("Lee", it)
+        repository.letMovieList(it).cachedIn(viewModelScope)
     }
 
-    fun getMovieList() = viewModelScope.launch {
-        val response = repository.getMovieList("아이")
-        _movieList.value = handleMovieResponse(response)
-    }
 
-    fun handleMovieResponse(respoonse: Response<Movie>): Movie {
-        if (respoonse.isSuccessful) {
-            respoonse.body().let { result ->
-                return result!!
-            }
-        }
-        return Movie.emptyMovieItem
-    }
 }

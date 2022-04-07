@@ -19,10 +19,11 @@ import kotlinx.coroutines.launch
 @ExperimentalPagingApi
 class MovieActivity : AppCompatActivity() {
     val viewModel: MovieViewModel by viewModels()
-    private lateinit var binding: ActivityMovieBinding
+    private val binding: ActivityMovieBinding by lazy {
+        ActivityMovieBinding.inflate(layoutInflater)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMovieBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.movieNavHostFragment) as NavHostFragment

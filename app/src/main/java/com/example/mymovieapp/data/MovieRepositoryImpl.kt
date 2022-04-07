@@ -5,7 +5,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.mymovieapp.api.MovieApi
-import com.example.mymovieapp.util.Constants.START_PAGE
 import com.example.mymovieapp.model.MovieItem
 import com.example.mymovieapp.util.Constants.PAGE_SIZE
 import kotlinx.coroutines.flow.Flow

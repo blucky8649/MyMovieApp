@@ -5,7 +5,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.mymovieapp.util.Constants
-import com.example.mymovieapp.util.Constants.START_PAGE
 import com.example.mymovieapp.api.MovieApi
 import com.example.mymovieapp.model.MovieItem
 import com.example.mymovieapp.util.Constants.PAGE_SIZE

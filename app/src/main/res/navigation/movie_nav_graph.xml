@@ -7,9 +7,17 @@
         android:id="@+id/movieListFragment"
         android:name="com.example.mymovieapp.ui.fragments.MovieListFragment"
         android:label="MovieListFragment" >
+        <argument
+            android:name="movieItem"
+            app:argType="com.example.mymovieapp.model.MovieItem"/>
         <action
             android:id="@+id/action_movieListFragment_to_movieWebViewFragment"
-            app:destination="@id/movieWebViewFragment" />
+            app:destination="@id/movieWebViewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+        </action>
     </fragment>
     <fragment
         android:id="@+id/saveMovieFragment"
@@ -17,12 +25,20 @@
         android:label="SaveMovieFragment" >
         <action
             android:id="@+id/action_saveMovieFragment_to_movieWebViewFragment"
-            app:destination="@id/movieWebViewFragment" />
+            app:destination="@id/movieWebViewFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
         android:id="@+id/movieWebViewFragment"
         android:name="com.example.mymovieapp.ui.fragments.MovieWebViewFragment"
-        android:label="MovieWebViewFragment" />
+        android:label="MovieWebViewFragment">
+        <argument
+            android:name="movieItem"
+            app:argType="com.example.mymovieapp.model.MovieItem"/>
+    </fragment>
     <fragment
         android:id="@+id/searchKeywordFragment"
         android:name="com.example.mymovieapp.ui.fragments.SearchKeywordFragment"

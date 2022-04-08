@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import android.webkit.WebViewClient
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import androidx.paging.ExperimentalPagingApi
 import com.example.mymovieapp.R
 import com.example.mymovieapp.databinding.FragmentMovieWebviewBinding
 import com.example.mymovieapp.databinding.FragmentSaveMovieBinding
-
+import com.example.mymovieapp.ui.MovieActivity
+@ExperimentalPagingApi
 class MovieWebViewFragment: Fragment(R.layout.fragment_movie_webview) {
     private var _binding: FragmentMovieWebviewBinding? = null
     val binding get() = _binding!!

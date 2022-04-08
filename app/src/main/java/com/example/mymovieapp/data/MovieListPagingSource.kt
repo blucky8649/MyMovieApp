@@ -5,8 +5,11 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.mymovieapp.util.Constants
+import com.example.mymovieapp.util.Constants.START_PAGE
 import com.example.mymovieapp.api.MovieApi
 import com.example.mymovieapp.model.MovieItem
+import com.example.mymovieapp.util.Constants.NAVER_ID
+import com.example.mymovieapp.util.Constants.NAVER_SECRET
 import com.example.mymovieapp.util.Constants.PAGE_SIZE
 import retrofit2.HttpException
 import java.io.IOException
@@ -17,9 +20,9 @@ class MovieListPagingSource(val movieApi: MovieApi, val searchQuery: String) : P
         return try {
             val page = params.key ?: 1
             val response = movieApi.getMovieList(
-                Constants.NAVER_ID,
-                Constants.NAVER_SECRET, searchQuery,
-                Constants.PAGE_SIZE, page)
+                NAVER_ID,
+                NAVER_SECRET, searchQuery,
+                PAGE_SIZE, page)
 
             Log.d("Lee", page.toString() + " " + response.total)
             LoadResult.Page(

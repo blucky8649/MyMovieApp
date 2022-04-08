@@ -16,11 +16,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 @ExperimentalPagingApi
+@ExperimentalCoroutinesApi
 class MovieViewModel @Inject constructor(
     private val repository: MovieRepository
 ) : ViewModel() {
-    private val _movieList = MutableStateFlow<PagingData<MovieItem>>(PagingData.empty())
-    val movieList get() = _movieList
 
     private val _searchQuery:MutableStateFlow<String> = MutableStateFlow("")
     val searchQuery get(): StateFlow<String> = _searchQuery
@@ -28,7 +27,6 @@ class MovieViewModel @Inject constructor(
     fun postKeyword(searchQuery: String) {
         _searchQuery.value = searchQuery
     }
-    @OptIn(ExperimentalCoroutinesApi::class)
     val result = searchQuery.flatMapLatest {
         Log.d("Lee", it)
         repository.letMovieList(it).cachedIn(viewModelScope)

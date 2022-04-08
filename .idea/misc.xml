@@ -3,14 +3,24 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable-v24/ic_baseline_cancel_24.xml" value="0.1685" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable-v24/ic_baseline_delete_outline_24.xml" value="0.1" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable-v24/ic_baseline_menu_24.xml" value="0.1685" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable-v24/ic_baseline_search_24.xml" value="0.1" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable-v24/layout_rounded.xml" value="0.1685" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/activity_main.xml" value="0.1403985507246377" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/activity_movie.xml" value="0.17401215805471124" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/fragment_movie_list.xml" value="0.21" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/fragment_movie_webview.xml" value="0.1403985507246377" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/fragment_save_movie.xml" value="0.1403985507246377" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/fragment_search_keywords.xml" value="0.1403985507246377" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/item_movie_list.xml" value="0.75" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/item_movie_loader.xml" value="0.1757852077001013" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/layout/item_search_keyword.xml" value="0.33" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/menu/bottom_menu.xml" value="0.34074074074074073" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/menu/botton_menu.xml" value="0.184375" />
+        <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/menu/top_menu.xml" value="0.34074074074074073" />
         <entry key="..\:/Users/bluck/AndroidStudioProjects/MyMovieApp/app/src/main/res/xml/motion_loader.xml" value="0.1757852077001013" />
       </map>
     </option>

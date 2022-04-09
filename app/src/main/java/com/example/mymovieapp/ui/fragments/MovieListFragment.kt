@@ -43,7 +43,7 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
     val binding get() = _binding!!
 
     val movieAdapter: MovieListAdapter by lazy {
-        requireActivity().let { MovieListAdapter(it) }
+        MovieListAdapter()
     }
     val loadStateAdapter: LoaderStateAdapter by lazy {
         LoaderStateAdapter { movieAdapter.retry() }

@@ -1,5 +1,7 @@
 package com.example.mymovieapp.adapter
 
+import android.content.Context
+import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -11,7 +13,7 @@ import com.example.mymovieapp.databinding.ItemMovieListBinding
 import com.example.mymovieapp.model.MovieItem
 import com.example.mymovieapp.util.DataParseUtil
 
-class MovieListAdapter : PagingDataAdapter<MovieItem, MovieListAdapter.MovieViewHolder>(differCallback) {
+class MovieListAdapter(val mContext: Context?) : PagingDataAdapter<MovieItem, MovieListAdapter.MovieViewHolder>(differCallback) {
     companion object{
         private val differCallback = object : DiffUtil.ItemCallback<MovieItem>() {
             override fun areItemsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean {
@@ -51,8 +53,10 @@ class MovieListAdapter : PagingDataAdapter<MovieItem, MovieListAdapter.MovieView
                 }
                 tvTitle.text = "${DataParseUtil.removeTags(item?.title)}"
                 tvRating.text = item?.userRating.toString()
-                tvDirector.text = "${DataParseUtil.removeVerticalBarFromText(item!!.director)} (${item?.pubDate})"
-                ratingBar.rating = item?.userRating?.toFloat()?.div(2)
+                val text = mContext?.let { it.getString(R.string.directorAndDateInfo, item?.pubDate) }
+
+                tvDirector.text = text
+                ratingBar.rating = item?.userRating?.toFloat()!!.div(2)
             }
         }
     }

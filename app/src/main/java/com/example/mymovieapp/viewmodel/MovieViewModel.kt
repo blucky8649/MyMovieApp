@@ -32,49 +32,19 @@ class MovieViewModel @Inject constructor(
            userPref.setSaveSearchOption(isEnabled)
        }
     }
-    var currentTime: Long = 0
-    init {
-        viewModelScope.launch {
-            time.collectLatest {
-                currentTime = it
-            }
-        }
-    }
-    val time = flow {
-        while (true) {
-            val currentTimeMills = System.currentTimeMillis()
-            delay(1000L)
-            emit(currentTimeMills)
-        }
-    }
-    var list = ArrayList<Keyword>()
-    val searchKeywords: Flow<MutableList<Keyword>> = userPref.searchDataFlow
 
-    fun addSearchData(query: String) {
-        if (!stateOfSaveOption) return
-        list.add(Keyword(currentTime, query))
-        setSearchData(list)
+    fun addSearchData(keyword: Keyword) = viewModelScope.launch {
+        if (!stateOfSaveOption) return@launch
+        repository.insert(keyword)
     }
-
-    fun removeSearchData(pos: Int) {
-        list.removeAt(pos)
-        setSearchData(list)
+    fun getSavedKeywords() = repository.getKeywords()
+    fun deleteKeyword(keyword: Keyword) = viewModelScope.launch {
+        repository.deleteKeyword(keyword)
     }
-    fun clearSearchData() {
-        viewModelScope.launch {
-            list.clear()
-            userPref.setSearchData(list)
-        }
-
+    fun clearKeywords() = viewModelScope.launch {
+        repository.clearKeywords()
     }
-    fun setSearchData(arr: MutableList<Keyword>) {
-        viewModelScope.launch {
-            Log.d("Lee", "$arr")
-            userPref.setSearchData(arr)
-            delay(300L)
-        }
-    }
-    private val _searchQuery:MutableStateFlow<String> = MutableStateFlow("")
+    private val _searchQuery:MutableStateFlow<String> = MutableStateFlow("플로우")
     val searchQuery get(): StateFlow<String> = _searchQuery
 
     fun postKeyword(searchQuery: String) {
@@ -84,6 +54,4 @@ class MovieViewModel @Inject constructor(
         Log.d("Lee", it)
         repository.letMovieList(it).cachedIn(viewModelScope)
     }
-
-
 }

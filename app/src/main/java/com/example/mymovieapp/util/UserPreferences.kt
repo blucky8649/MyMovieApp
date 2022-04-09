@@ -18,7 +18,6 @@ class UserPreferences(private val context: Context) {
     private val Context.dataStore by preferencesDataStore(name = "dataStore")
 
     private val KEY_SAVE_SEARCH_KEYWORDS = booleanPreferencesKey("검색어 저장 여부")
-    private val KEY_SEARCH_DATA = stringPreferencesKey("검색 기록 데이터")
 
     val saveOptionFlow: Flow<Boolean> = context.dataStore.data
         .catch { exception ->
@@ -30,29 +29,6 @@ class UserPreferences(private val context: Context) {
         }.map { preferences ->
             preferences[KEY_SAVE_SEARCH_KEYWORDS] ?: false
         }
-
-    val searchDataFlow: Flow<MutableList<Keyword>> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }.map { preferences ->
-            if (preferences[KEY_SEARCH_DATA].isNullOrEmpty()) {
-                arrayListOf(Keyword(0,""))
-            } else {
-                Gson().
-                fromJson(preferences[KEY_SEARCH_DATA], Array<Keyword>::class.java).
-                toMutableList()
-            }
-
-        }
-    suspend fun setSearchData(data: MutableList<Keyword>) {
-        context.dataStore.edit { preferences ->
-            preferences[KEY_SEARCH_DATA] = Gson().toJson(data)
-        }
-    }
 
     suspend fun setSaveSearchOption(isSaveEnabled: Boolean) {
         context.dataStore.edit { preferences ->

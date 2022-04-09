@@ -11,12 +11,14 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.mymovieapp.util.Constants.DELEY_500L
 import com.example.mymovieapp.R
 import com.example.mymovieapp.adapter.LoaderStateAdapter
@@ -28,6 +30,8 @@ import com.example.mymovieapp.ui.MovieActivity
 import com.example.mymovieapp.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -61,28 +65,43 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         setupRecyclerView()
         fetchMovieList()
         (activity as MovieActivity).setSupportActionBar(binding.toolbar)
+        observeIsSearchQueryChanged()
+        setupSwitchState()
+        observeIsSaveOptionEnabled()
+        observeIsDataChanged()
+
+        return binding.root
+    }
+    fun observeIsSearchQueryChanged() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchQuery.collectLatest { query ->
+                binding.toolbar.title = query
+            }
+        }
+    }
+    fun setupSwitchState() {
         binding.searchHistoryModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             viewModel.setSaveMode(isChecked)
-
         }
+    }
+    fun observeIsDataChanged() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.getSavedKeywords().collectLatest {
+                searchKeywordAdapter.submitList(it.toMutableList())
+            }
+        }
+    }
+    fun observeIsSaveOptionEnabled() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.isSaveEnabled.collectLatest { isEnabled ->
                 binding.searchHistoryModeSwitch.isChecked = isEnabled
             }
         }
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.searchKeywords.collectLatest {
-                searchKeywordAdapter.submitList(null)
-                viewModel.list = it.toMutableList() as ArrayList<Keyword>
-            }
-        }
-
-        return binding.root
     }
     fun fetchMovieList() {
         viewLifecycleOwner.lifecycleScope.launch {
-            viewModel.result
-                .collectLatest { movie ->
+            viewModel.result.collectLatest { movie ->
+                    binding.recyclerView.scrollToPosition(0)
                     movieAdapter.submitData(viewLifecycleOwner.lifecycle, movie)
                 }
         }
@@ -91,10 +110,13 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         binding.recyclerView.apply {
             adapter = movieAdapter.withLoadStateFooter(loadStateAdapter)
             layoutManager = context?.let { LinearLayoutManager(it) }
+            addItemDecoration(DividerItemDecoration(context, 1))
         }
         binding.searchHistoryRecyclerView.apply {
             adapter = searchKeywordAdapter
-            layoutManager = context?.let { LinearLayoutManager(it, LinearLayoutManager.VERTICAL, true) }
+            scrollToPosition(0)
+            itemAnimator = null
+            layoutManager = context?.let { GridLayoutManager(it, 2) }
         }
 
         movieAdapter.setOnItemClickListener { item ->
@@ -103,15 +125,21 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         }
 
         searchKeywordAdapter.apply {
-            setOnDeletedBtnClickListener { position ->
-                context?.let { Toast.makeText(it, "삭제됨 ${searchKeywordAdapter.currentList[position].keyword}", Toast.LENGTH_SHORT).show() }
-                viewModel.removeSearchData(position)
+            setOnDeletedBtnClickListener { item ->
+                //context?.let { Toast.makeText(it, "삭제됨 ${item.keyword}", Toast.LENGTH_SHORT).show() }
+                viewModel.deleteKeyword(item)
 
             }
-            setOnSearchKeywordClickListener { position ->
-                context?.let { Toast.makeText(it, "키워드 눌림 $position", Toast.LENGTH_SHORT).show() }
+            setOnSearchKeywordClickListener { item ->
+                //context?.let { Toast.makeText(it, "키워드 눌림 ${item.keyword}", Toast.LENGTH_SHORT).show() }
+                sendRequest(item.keyword)
             }
-
+            registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver(){
+                override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                    super.onItemRangeInserted(positionStart, itemCount)
+                    binding.searchHistoryRecyclerView.smoothScrollToPosition(0)
+                }
+            })
         }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -127,7 +155,7 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
                     true -> {
                         Log.d("Lee", "서치뷰 열림")
                         binding.linearSearchHistoryView.isVisible = true
-                        binding.searchHistoryRecyclerView.scrollToPosition(searchKeywordAdapter.itemCount -1)
+
                     }
                     false -> {
                         Log.d("Lee", "서치뷰 닫힘")
@@ -138,12 +166,8 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
             setOnQueryTextListener(object: SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     query?.let {
-                        viewModel.postKeyword(query)
-                        binding.toolbar.apply {
-                            title = query
-                            collapseActionView()
-                        }
-                        viewModel.addSearchData(query)
+                        sendRequest(it)
+                        viewModel.addSearchData(Keyword(keyword =  query))
                     }
                     return true
                 }
@@ -155,9 +179,16 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         }
 
         binding.clearSearchHistoryButtton.setOnClickListener {
-            viewModel.clearSearchData()
+            viewModel.clearKeywords()
         }
         super.onCreateOptionsMenu(menu, inflater)
+    }
+    fun sendRequest(query: String) {
+        viewModel.postKeyword(query)
+        binding.toolbar.apply {
+            title = query
+            collapseActionView()
+        }
     }
     override fun onDestroyView() {
         super.onDestroyView()

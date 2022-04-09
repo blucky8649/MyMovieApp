@@ -49,10 +49,10 @@ class MovieListAdapter : PagingDataAdapter<MovieItem, MovieListAdapter.MovieView
                 itemView.setOnClickListener {
                     onItemClickListener?.let { it(item!!) }
                 }
-                tvTitle.text = "${DataParseUtil.removeTags(item?.title)} (${item?.pubDate})"
+                tvTitle.text = "${DataParseUtil.removeTags(item?.title)}"
                 tvRating.text = item?.userRating.toString()
-                tvDerector.text = item?.director
-                ratingBar.rating = item?.userRating?.toFloat()?.div(2) ?: 0f
+                tvDirector.text = "${DataParseUtil.removeVerticalBarFromText(item!!.director)} (${item?.pubDate})"
+                ratingBar.rating = item?.userRating?.toFloat()?.div(2)
             }
         }
     }

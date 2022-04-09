@@ -1,10 +1,14 @@
 package com.example.mymovieapp.di
 
+import android.app.Application
 import android.content.Context
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.mymovieapp.util.Constants.BASE_URL
 import com.example.mymovieapp.api.MovieApi
 import com.example.mymovieapp.data.MovieRepository
 import com.example.mymovieapp.data.MovieRepositoryImpl
+import com.example.mymovieapp.db.HistoryDatabase
 import com.example.mymovieapp.util.UserPreferences
 import dagger.Module
 import dagger.Provides
@@ -39,7 +43,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMovieRepository(api: MovieApi): MovieRepository = MovieRepositoryImpl(api)
+    fun provideRoomDatabase(app: Application): HistoryDatabase =
+        Room.databaseBuilder(
+            app,
+            HistoryDatabase::class.java,
+            "saved_history_keywords.db"
+        ).build()
+
+    @Provides
+    @Singleton
+    fun provideMovieRepository(api: MovieApi, db: HistoryDatabase): MovieRepository = MovieRepositoryImpl(api, db)
 
     @Provides
     @Singleton

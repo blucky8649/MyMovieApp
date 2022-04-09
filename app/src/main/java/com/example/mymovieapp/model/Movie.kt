@@ -6,14 +6,4 @@ data class Movie(
     val start: Int = 0,
     val display: Int = 0,
     val items: List<MovieItem>
-) {
-    companion object {
-        val emptyMovieItem = Movie(
-            "",
-            0,
-            0,
-            0,
-            emptyList()
-        )
-    }
-}
+)

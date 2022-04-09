@@ -8,23 +8,22 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymovieapp.databinding.ItemSearchKeywordBinding
 import com.example.mymovieapp.model.Keyword
+import com.example.mymovieapp.model.MovieItem
 import com.example.mymovieapp.util.DataParseUtil
 
 class SearchKeywordAdapter: ListAdapter<Keyword, SearchKeywordAdapter.SearchViewHolder>(diffUtil) {
     inner class SearchViewHolder(val binding: ItemSearchKeywordBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Keyword, position: Int) {
+        fun bind(item: Keyword) {
             binding.apply {
-                tvUploadDate.text = DataParseUtil.formatDate(item.time)
                 searchTermText.text = item.keyword
                 deleteSearchBtn.setOnClickListener {
                     onDeleteBtnClickListener?.let {
-                        it(position)
+                        it(item)
                     }
                 }
                 constraintSearchItem.setOnClickListener {
                     onSearchKeywordClickListener?.let {
-                        Log.d("searchAdapter", position.toString())
-                        it(position)
+                        it(item)
                     }
                 }
 
@@ -35,7 +34,7 @@ class SearchKeywordAdapter: ListAdapter<Keyword, SearchKeywordAdapter.SearchView
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Keyword>() {
             override fun areItemsTheSame(oldItem: Keyword, newItem: Keyword): Boolean {
-                return oldItem.time == newItem.time
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: Keyword, newItem: Keyword): Boolean {
@@ -54,16 +53,16 @@ class SearchKeywordAdapter: ListAdapter<Keyword, SearchKeywordAdapter.SearchView
             )
         )
     }
-    private var onDeleteBtnClickListener: ((Int) -> Unit)? = null
-    private var onSearchKeywordClickListener: ((Int) -> Unit)? = null
-    fun setOnDeletedBtnClickListener(listener: (Int) -> Unit) {
+    private var onDeleteBtnClickListener: ((Keyword) -> Unit)? = null
+    private var onSearchKeywordClickListener: ((Keyword) -> Unit)? = null
+    fun setOnDeletedBtnClickListener(listener: (Keyword) -> Unit) {
         onDeleteBtnClickListener = listener
     }
-    fun setOnSearchKeywordClickListener(listener: (Int) -> Unit) {
+    fun setOnSearchKeywordClickListener(listener: (Keyword) -> Unit) {
         onSearchKeywordClickListener = listener
     }
     override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
-        holder.bind(getItem(holder.absoluteAdapterPosition), holder.absoluteAdapterPosition)
+        holder.bind(getItem(holder.bindingAdapterPosition))
     }
 }
 

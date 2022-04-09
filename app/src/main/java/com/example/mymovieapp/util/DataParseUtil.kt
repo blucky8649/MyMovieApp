@@ -15,4 +15,9 @@ object DataParseUtil {
         val format = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         return format.format(date)
     }
+
+    fun removeVerticalBarFromText(text: String): String {
+        if (text.isNullOrEmpty()) return ""
+        return text.substring(0, text.length - 1)
+    }
 }

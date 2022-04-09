@@ -5,7 +5,7 @@ Naver Api를 사용한 Movie App
 * Jetpack AAC(paging 3, preference dataStore, viewModel, room)
 * retrofit2
 * glide
-* coroutine + flow
+* coroutines + flow
 * ListAdapter + DiffUtil
 ## ScreenShot
 |메인 화면|검색어 저장|

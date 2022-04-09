@@ -27,4 +27,8 @@
         <item name="android:colorForeground">@color/colorLightGray</item>
 
     </style>
+
+    <style name="appbarStyle" parent="@style/Base.TextAppearance.AppCompat.Title">
+        <item name="android:textSize">10sp</item>
+    </style>
 </resources>

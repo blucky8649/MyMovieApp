@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.EditText
+import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
@@ -22,6 +23,7 @@ import com.example.mymovieapp.adapter.LoaderStateAdapter
 import com.example.mymovieapp.adapter.MovieListAdapter
 import com.example.mymovieapp.adapter.SearchKeywordAdapter
 import com.example.mymovieapp.databinding.FragmentMovieListBinding
+import com.example.mymovieapp.model.Keyword
 import com.example.mymovieapp.ui.MovieActivity
 import com.example.mymovieapp.viewmodel.MovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +61,21 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         setupRecyclerView()
         fetchMovieList()
         (activity as MovieActivity).setSupportActionBar(binding.toolbar)
+        binding.searchHistoryModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            viewModel.setSaveMode(isChecked)
+
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.isSaveEnabled.collectLatest { isEnabled ->
+                binding.searchHistoryModeSwitch.isChecked = isEnabled
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchKeywords.collectLatest {
+                searchKeywordAdapter.submitList(null)
+                viewModel.list = it.toMutableList() as ArrayList<Keyword>
+            }
+        }
 
         return binding.root
     }
@@ -77,21 +94,24 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
         }
         binding.searchHistoryRecyclerView.apply {
             adapter = searchKeywordAdapter
-            layoutManager = context?.let { GridLayoutManager(it, 2) }
+            layoutManager = context?.let { LinearLayoutManager(it, LinearLayoutManager.VERTICAL, true) }
         }
 
         movieAdapter.setOnItemClickListener { item ->
             val action = MovieListFragmentDirections.actionMovieListFragmentToMovieWebViewFragment(item)
             findNavController().navigate(action)
         }
-        searchKeywordAdapter.submitList(listOf("행인", "어벤져스"))
+
         searchKeywordAdapter.apply {
             setOnDeletedBtnClickListener { position ->
-                context?.let { Toast.makeText(it, "삭제 버튼 눌림", Toast.LENGTH_SHORT).show() }
+                context?.let { Toast.makeText(it, "삭제됨 ${searchKeywordAdapter.currentList[position].keyword}", Toast.LENGTH_SHORT).show() }
+                viewModel.removeSearchData(position)
+
             }
             setOnSearchKeywordClickListener { position ->
-                context?.let { Toast.makeText(it, "키워드 눌림", Toast.LENGTH_SHORT).show() }
+                context?.let { Toast.makeText(it, "키워드 눌림 $position", Toast.LENGTH_SHORT).show() }
             }
+
         }
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -107,6 +127,7 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
                     true -> {
                         Log.d("Lee", "서치뷰 열림")
                         binding.linearSearchHistoryView.isVisible = true
+                        binding.searchHistoryRecyclerView.scrollToPosition(searchKeywordAdapter.itemCount -1)
                     }
                     false -> {
                         Log.d("Lee", "서치뷰 닫힘")
@@ -122,6 +143,7 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
                             title = query
                             collapseActionView()
                         }
+                        viewModel.addSearchData(query)
                     }
                     return true
                 }
@@ -132,7 +154,9 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
             })
         }
 
-
+        binding.clearSearchHistoryButtton.setOnClickListener {
+            viewModel.clearSearchData()
+        }
         super.onCreateOptionsMenu(menu, inflater)
     }
     override fun onDestroyView() {

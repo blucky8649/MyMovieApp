@@ -8,18 +8,15 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         app:liftOnScroll="true"
         app:liftOnScrollTargetViewId="@id/recyclerView"
         >
-        <com.google.android.material.appbar.MaterialToolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:title="영화 검색"
-            app:menu="@menu/top_menu"
-            app:navigationIcon="@drawable/ic_baseline_menu_24"
             android:elevation="5dp"
             app:layout_scrollFlags="scroll|enterAlways|snap" />
         <View
@@ -105,7 +102,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/search_history_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="wrap_content"/>
 
     </LinearLayout>
 

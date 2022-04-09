@@ -1,6 +1,6 @@
 package com.example.mymovieapp.model
 
 data class Keyword(
-    val time: String,
+    val time: Long,
     val keyword: String
 )

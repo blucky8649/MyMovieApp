@@ -7,6 +7,8 @@ import android.widget.EditText
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.MenuItemCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -42,6 +44,8 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
     private var _binding: FragmentMovieListBinding? = null
     val binding get() = _binding!!
 
+    var list = ArrayList<Keyword>()
+
     val movieAdapter: MovieListAdapter by lazy {
         MovieListAdapter()
     }
@@ -55,22 +59,69 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
 
     val viewModel: MovieViewModel by activityViewModels()
 
+    private lateinit var mSearchView: SearchView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        setHasOptionsMenu(true)
         _binding = FragmentMovieListBinding.inflate(inflater, container, false)
         setupRecyclerView()
         fetchMovieList()
-        (activity as MovieActivity).setSupportActionBar(binding.toolbar)
         observeIsSearchQueryChanged()
         setupSwitchState()
         observeIsSaveOptionEnabled()
         observeIsDataChanged()
+        setupToolbar()
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.searchViewState.collectLatest {
+                binding.linearSearchHistoryView.isVisible = it
+            }
+        }
         return binding.root
+    }
+    fun setupToolbar() {
+        binding.clearSearchHistoryButtton.setOnClickListener {
+            viewModel.clearKeywords()
+        }
+
+        binding.toolbar.inflateMenu(R.menu.top_menu)
+        binding.toolbar.menu.findItem(R.id.search_menu_item)
+            .setOnActionExpandListener(object : MenuItem.OnActionExpandListener{
+                override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                    viewModel.setSearchViewVisibility(true)
+                    return true
+                }
+
+                override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                    viewModel.setSearchViewVisibility(false)
+                    return true
+                }
+
+            })
+        mSearchView = binding.toolbar.menu.findItem(R.id.search_menu_item)?.actionView as SearchView
+        mSearchView.apply {
+            queryHint = "검색어를 입력해주세요."
+            background = ResourcesCompat.getDrawable(resources,R.drawable.layout_rounded, null)
+
+            setOnQueryTextListener(object: SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    query?.let {
+                        if (list.size == 10) viewModel.deleteKeyword(list[list.size - 1])
+                        sendRequest(it)
+                        viewModel.addSearchData(Keyword(keyword =  query))
+                    }
+                    viewModel.setSearchViewVisibility(false)
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return true
+                }
+            })
+        }
     }
     fun observeIsSearchQueryChanged() {
         viewLifecycleOwner.lifecycleScope.launch {
@@ -87,6 +138,8 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
     fun observeIsDataChanged() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.getSavedKeywords().collectLatest {
+                list = it.toMutableList() as ArrayList<Keyword>
+                Log.d("ListTest","$it")
                 searchKeywordAdapter.submitList(it.toMutableList())
             }
         }
@@ -98,6 +151,7 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
             }
         }
     }
+
     fun fetchMovieList() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewModel.result.collectLatest { movie ->
@@ -141,47 +195,6 @@ class MovieListFragment: Fragment(R.layout.fragment_movie_list)
                 }
             })
         }
-    }
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.top_menu, menu)
-        val mySearchView = menu.findItem(R.id.search_menu_item)?.actionView as SearchView
-
-        mySearchView.apply {
-            queryHint = "검색어를 입력해주세요."
-            background = resources.getDrawable(R.drawable.layout_rounded, null)
-
-            setOnQueryTextFocusChangeListener{ _, isExpanded ->
-                when (isExpanded) {
-                    true -> {
-                        Log.d("Lee", "서치뷰 열림")
-                        binding.linearSearchHistoryView.isVisible = true
-
-                    }
-                    false -> {
-                        Log.d("Lee", "서치뷰 닫힘")
-                        binding.linearSearchHistoryView.isVisible = false
-                    }
-                }
-            }
-            setOnQueryTextListener(object: SearchView.OnQueryTextListener{
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    query?.let {
-                        sendRequest(it)
-                        viewModel.addSearchData(Keyword(keyword =  query))
-                    }
-                    return true
-                }
-
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    return true
-                }
-            })
-        }
-
-        binding.clearSearchHistoryButtton.setOnClickListener {
-            viewModel.clearKeywords()
-        }
-        super.onCreateOptionsMenu(menu, inflater)
     }
     fun sendRequest(query: String) {
         viewModel.postKeyword(query)

@@ -27,6 +27,14 @@ class MovieViewModel @Inject constructor(
         stateOfSaveOption = it
         it
     }
+
+    private val _searchViewState:MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val searchViewState get(): StateFlow<Boolean> = _searchViewState
+
+    fun setSearchViewVisibility(isVisible: Boolean) {
+        _searchViewState.value = isVisible
+    }
+
     fun setSaveMode(isEnabled: Boolean) {
        viewModelScope.launch {
            userPref.setSaveSearchOption(isEnabled)
